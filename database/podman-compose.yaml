@@ -1,0 +1,16 @@
+version: "3.9"
+
+services:
+  db-server-c:
+    image: postgres:16.8-alpine3.20
+    container_name: db-tienda-ropa
+    environment:
+      POSTGRES_USER: user-db
+      POSTGRES_PASSWORD: 12345
+      POSTGRES_DB: db-tienda-ropa
+      PGDATA: /var/lib/postgresql/data/pgdata
+    ports:
+      - 4002:5432
+    volumes:
+      - ./db-tienda:/var/lib/postgresql/data/pgdata:Z
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql:Z
