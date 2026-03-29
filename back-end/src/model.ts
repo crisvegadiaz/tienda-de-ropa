@@ -41,12 +41,10 @@ class Modelo {
    */
   static async getAllProducts(): Promise<Producto[]> {
     try {
-      // Corregido: 'nombres' no existe en la BD, es 'nombre'
-      const { rows } = await pool.query<Producto>("select nombre, precio from productos");
+      const { rows } = await pool.query<Producto>("select id, nombre, precio from productos");
       return rows;
     } catch (error) {
-      console.error("Error fetching products:", error);
-      throw new Error("Failed to retrieve products from the database.");
+      throw error;
     }
   }
 
@@ -56,7 +54,7 @@ class Modelo {
     * @returns {Promise<ProductoVariante[]>} Respuesta con la lista de variantes del producto. 
   */
 
-  static async getProduct(id: string): Promise<ProductoVariante[]> {
+  static async getProductVariants(id: string): Promise<ProductoVariante[]> {
     try {
       // Usamos el genérico <ProductoVariante> para asegurar el tipo de retorno
       const { rows } = await pool.query<ProductoVariante>(`
@@ -70,8 +68,7 @@ class Modelo {
       `, [id])
       return rows
     } catch (error) {
-      console.error("Error fetching products:", error);
-      throw new Error("Failed to retrieve products from the database.");
+      throw error;
     }
   }
 }
