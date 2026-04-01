@@ -1,21 +1,12 @@
 import { Router, type NextFunction, type Request, type Response } from "express";
 import Modele from "../model.ts";
-import Joi from "joi";
+import { validateId } from "../middleware/validate.middleware.ts";
 
 const productVariantsRouter = Router()
 
-productVariantsRouter.get("/producto/:id/variantes", async (req: Request, res: Response, next: NextFunction) => {
-	let { id } = req.params;
-
-	const schema = Joi.string().uuid({ version: "uuidv4" }).required();
-	const { error, value } = schema.validate(id);
-
-	if (error) {
-		return res.status(400).json({ error: "Invalid or missing product UUID" });
-	}
-
+productVariantsRouter.get("/producto/:id/variantes", validateId, async (req: Request<{ id: string }>, res: Response, next: NextFunction) => {
 	try {
-		const product = await Modele.getProductVariants(value)
+		const product = await Modele.getProductVariants(req.params.id)
 		res.json(product)
 	} catch (err) {
 		next(err);
