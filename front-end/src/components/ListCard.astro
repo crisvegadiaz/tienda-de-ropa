@@ -1,0 +1,52 @@
+---
+import Card from "./Card.astro";
+
+interface Producto {
+  id: string;
+  nombre: string;
+  precio: string;
+}
+
+async function listProducts(): Promise<Producto[]> {
+  try {
+    const res = await fetch("http://localhost:3000/productos");
+    if (!res.ok) {
+      throw new Error(res.statusText);
+    }
+    return await res.json();
+  } catch (error) {
+    console.error("Error List Products:", error);
+    return [];
+  }
+}
+
+const products: Producto[] = await listProducts();
+---
+
+<section>
+  <ul>
+    {
+      products.map(({ id, nombre, precio }: Producto) => (
+        <Card
+          title={nombre}
+          price={precio}
+          img={`http://localhost:3000/producto/img/${id}`}
+        />
+      ))
+    }
+  </ul>
+</section>
+
+<style>
+  section {
+    width: 50%;
+  }
+  ul {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    grid-auto-rows: auto;
+    gap: 1rem;
+    list-style-type: none;
+    padding: 0;
+  }
+</style>

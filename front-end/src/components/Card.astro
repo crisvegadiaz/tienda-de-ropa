@@ -1,0 +1,66 @@
+---
+interface Props {
+  title: string;
+  price: string;
+  img: string;
+}
+
+const { title, price, img } = Astro.props;
+---
+
+<li class="card">
+  <a href="/">
+    <img src=`${img}` alt=`${title}` width="200" class="card-img" />
+    <div class="card-content">
+      <p class="card-title">${title}</p>
+      <span class="card-price">${price}</span>
+    </div>
+  </a>
+</li>
+
+<style>
+  .card {
+    box-sizing: border-box;
+    max-width: 260px;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    padding: 0;
+    overflow: hidden;
+    transition: box-shadow 0.2s;
+    list-style: none;
+  }
+  .card:hover {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  }
+  a {
+    display: block;
+    color: inherit;
+    text-decoration: none;
+  }
+  .card-img {
+    width: 100%;
+    display: block;
+    aspect-ratio: 4/3;
+    object-fit: cover;
+    border-bottom: 1px solid #f0f0f0;
+  }
+  .card-content {
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .card-title {
+    font-size: 1rem;
+    font-weight: 500;
+    margin: 0;
+    color: #222;
+  }
+  .card-price {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #1abc9c;
+    margin-top: 0.25rem;
+  }
+</style>
