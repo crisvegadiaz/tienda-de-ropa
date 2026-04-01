@@ -1,5 +1,3 @@
-# Frontend
-
 # build output
 dist/
 
@@ -25,7 +23,8 @@ pnpm-debug.log*
 # jetbrains setting folder
 .idea/
 
-
 # database
 db-tienda/
 
+# carpetas de back-end/public
+back-end/public/
