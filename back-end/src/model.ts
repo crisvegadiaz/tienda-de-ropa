@@ -25,6 +25,7 @@ pool.connect().then((client) => {
 });
 
 export interface Producto {
+  id: string;
   nombre: string;
   precio: string;
 }
@@ -40,12 +41,8 @@ class Modelo {
    * @returns {Promise<Producto[]>} Respuesta con la lista de productos.
    */
   static async getAllProducts(): Promise<Producto[]> {
-    try {
-      const { rows } = await pool.query<Producto>("select id, nombre, precio from productos");
-      return rows;
-    } catch (error) {
-      throw error;
-    }
+    const { rows } = await pool.query<Producto>("select id, nombre, precio from productos");
+    return rows;
   }
 
   /**
@@ -55,9 +52,7 @@ class Modelo {
   */
 
   static async getProductVariants(id: string): Promise<ProductoVariante[]> {
-    try {
-      // Usamos el genérico <ProductoVariante> para asegurar el tipo de retorno
-      const { rows } = await pool.query<ProductoVariante>(`
+    const { rows } = await pool.query<ProductoVariante>(`
       select
         v.talle,
         v.color
@@ -66,10 +61,7 @@ class Modelo {
         join variantes_producto v ON p.id = v.producto_id
       where p.id = $1
       `, [id])
-      return rows
-    } catch (error) {
-      throw error;
-    }
+    return rows
   }
 }
 
