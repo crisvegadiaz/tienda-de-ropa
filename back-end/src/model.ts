@@ -25,14 +25,16 @@ pool.connect().then((client) => {
 });
 
 export interface Producto {
-  id: string;
+  id?: string;
   nombre: string;
   precio: string;
+  genero?: string;
 }
 
 export interface ProductoVariante {
   talle: string;
   color: string;
+  cantidad: number;
 }
 
 class Modelo {
@@ -55,13 +57,33 @@ class Modelo {
     const { rows } = await pool.query<ProductoVariante>(`
       select
         v.talle,
-        v.color
+        v.color,
+        v.stock_cantidad as cantidad
       from
         productos p
         join variantes_producto v ON p.id = v.producto_id
       where p.id = $1
       `, [id])
     return rows
+  }
+
+  /** 
+   * Obtiene un producto específico por su ID, incluyendo su nombre, precio y género.
+   * @param {string} id - El ID del producto.
+   * @returns {Promise<Producto | null>} Respuesta con el producto encontrado o null si no existe.
+  */
+
+  static async getProduct(id: string): Promise<Producto | null> {
+    const { rows } = await pool.query<Producto>(`
+    select
+        p.nombre,
+        p.precio,
+        c.nombre as genero
+    from
+        productos p
+    join categorias c ON p.categoria_id = c.id
+    where p.id = $1`, [id]);
+    return rows[0] ?? null;
   }
 }
 
