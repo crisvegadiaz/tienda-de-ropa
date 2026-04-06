@@ -1,0 +1,120 @@
+---
+export const prerender = false;
+import Layout from "../layouts/Layout.astro";
+import ListBtn from "../components/listBtn.astro";
+
+const id: string | null = Astro.url.searchParams.get("id");
+
+interface Producto {
+  nombre: string;
+  precio: string;
+  genero: string;
+}
+
+interface Variante {
+  color: string;
+  talle: string;
+  cantidad: number;
+}
+
+interface ProductoYVariantes {
+  producto: Producto | null;
+  variantes: Variante[] | null;
+}
+
+if (!id) {
+  return Astro.redirect("/error");
+}
+
+async function fetchProductoYVariantes(
+  id: string,
+): Promise<ProductoYVariantes> {
+  try {
+    const [resProducto, resVariantes] = await Promise.all([
+      fetch(`http://localhost:3000/producto/${id}`),
+      fetch(`http://localhost:3000/producto/${id}/variantes`),
+    ]);
+
+    if (!resProducto.ok) {
+      throw new Error(resProducto.statusText);
+    }
+    if (!resVariantes.ok) {
+      throw new Error(resVariantes.statusText);
+    }
+
+    const producto = await resProducto.json();
+    const variantes = await resVariantes.json();
+    return { producto, variantes };
+  } catch (error) {
+    console.error("Error fetching product data:", error);
+    return { producto: null, variantes: null };
+  }
+}
+
+const { producto, variantes } = await fetchProductoYVariantes(id);
+
+if (!producto) {
+  return Astro.redirect("/error");
+}
+
+let colores = Array.from(new Set(variantes?.map((v) => v.color)));
+let talles = Array.from(new Set(variantes?.map((v) => v.talle)));
+---
+
+<Layout>
+  <main id="product-container" data-variantes={JSON.stringify(variantes)}>
+    <img
+      src={`http://localhost:3000/producto/img/${id}`}
+      alt={producto.nombre}
+      width="400"
+    />
+    <h1>{producto?.nombre}</h1>
+    <p>Precio: ${producto?.precio}</p>
+    <p>Género: {producto?.genero}</p>
+
+    <h2>variantes disponibles</h2>
+
+    <form>
+      <ListBtn list={colores} btnClass="btn-color" />
+      <ListBtn list={talles} btnClass="btn-talle" />
+      <button type="submit" class="btn-add-to-cart">Agregar al carrito</button>
+    </form>
+  </main>
+</Layout>
+
+<style>
+  main {
+    width: 50%;
+    margin: 2rem auto;
+    background: #fff;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  }
+  img {
+    width: 100%;
+    aspect-ratio: 4/3;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+  }
+  h1 {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+  }
+  p {
+    margin-bottom: 0.5rem;
+  }
+  .btn-add-to-cart {
+    margin-top: 1rem;
+    padding: 0.75rem 1.5rem;
+    background: #4caf50;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition:
+      background 0.3s,
+      transform 0.2s;
+  }
+</style>
