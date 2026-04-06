@@ -3,13 +3,14 @@ interface Props {
   title: string;
   price: string;
   img: string;
+  id: string;
 }
 
-const { title, price, img } = Astro.props;
+const { title, price, img, id } = Astro.props;
 ---
 
 <li class="card">
-  <a href="/">
+  <a href=`/product?id=${id}`>
     <img src=`${img}` alt=`${title}` width="200" class="card-img" />
     <div class="card-content">
       <p class="card-title">${title}</p>
