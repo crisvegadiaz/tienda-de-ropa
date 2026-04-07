@@ -1,0 +1,57 @@
+---
+interface Props {
+  list: string[];
+  name: string;
+}
+
+const { list, name } = Astro.props;
+---
+
+<select class="list-btn-group" name={name}>
+  {
+    list.map((item) => (
+      <option value={item} data-item={item}>
+        {item}
+      </option>
+    ))
+  }
+</select>
+
+<style>
+  select.list-btn-group {
+    width: 100%;
+    padding: 0.6rem 1.2rem;
+    border: 1.5px solid #bdbdbd;
+    border-radius: 8px;
+    background: linear-gradient(90deg, #f9f9f9 70%, #e3e3e3 100%);
+    font-size: 1rem;
+    color: #333;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    appearance: none;
+    outline: none;
+    margin-bottom: 0.5rem;
+    cursor: pointer;
+    position: relative;
+  }
+
+  select.list-btn-group:focus {
+    border-color: #4caf50;
+    box-shadow: 0 0 0 2px #4caf5040;
+  }
+
+  select.list-btn-group option {
+    padding: 0.5rem 1rem;
+    background: #fff;
+    color: #333;
+    border-radius: 0;
+  }
+
+  /* Custom arrow for select */
+  select.list-btn-group {
+    background-image: url("data:image/svg+xml;charset=UTF-8,<svg width='16' height='16' fill='gray' xmlns='http://www.w3.org/2000/svg'><path d='M4 6l4 4 4-4'/></svg>");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    background-size: 1.2em;
+  }
+</style>
