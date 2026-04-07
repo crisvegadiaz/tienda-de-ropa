@@ -1,7 +1,7 @@
 ---
 export const prerender = false;
 import Layout from "../layouts/Layout.astro";
-import ListBtn from "../components/listBtn.astro";
+import SelectOption from "../components/SelectOption.astro";
 
 const id: string | null = Astro.url.searchParams.get("id");
 
@@ -74,12 +74,38 @@ let talles = Array.from(new Set(variantes?.map((v) => v.talle)));
 
     <h2>variantes disponibles</h2>
 
-    <form>
-      <ListBtn list={colores} btnClass="btn-color" />
-      <ListBtn list={talles} btnClass="btn-talle" />
+    <form id="add-to-cart-form">
+      <SelectOption list={colores} name="color" />
+      <SelectOption list={talles} name="talle" />
+      <input
+        type="number"
+        min="1"
+        value="1"
+        class="input-cantidad"
+        name="cantidad"
+      />
       <button type="submit" class="btn-add-to-cart">Agregar al carrito</button>
     </form>
   </main>
+
+  <script>
+    const formElement = document.getElementById("add-to-cart-form");
+    if (formElement) {
+      formElement.addEventListener("submit", function (e) {
+        e.preventDefault();
+        const form = e.target as HTMLFormElement;
+        const formData = new FormData(form);
+        const color = formData.get("color");
+        const talle = formData.get("talle");
+        const cantidad = formData.get("cantidad");
+        console.log({
+          color,
+          talle,
+          cantidad,
+        });
+      });
+    }
+  </script>
 </Layout>
 
 <style>
@@ -104,6 +130,13 @@ let talles = Array.from(new Set(variantes?.map((v) => v.talle)));
   }
   p {
     margin-bottom: 0.5rem;
+  }
+  input[type="number"] {
+    width: 80px;
+    padding: 0.5rem;
+    margin-right: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
   }
   .btn-add-to-cart {
     margin-top: 1rem;
