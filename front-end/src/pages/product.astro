@@ -58,20 +58,27 @@ if (!producto) {
   return Astro.redirect("/error");
 }
 
-let colores = Array.from(new Set(variantes?.map((v) => v.color)));
-let talles = Array.from(new Set(variantes?.map((v) => v.talle)));
+const colores = Array.from(new Set(variantes?.map((v) => v.color) || []));
+const talles =
+  variantes?.filter((v) => v.color === colores[0]).map((v) => v.talle) || [];
 ---
 
 <Layout>
-  <main id="product-container" data-variantes={JSON.stringify(variantes)}>
+  <main
+    id="product-container"
+    data-variantes={JSON.stringify(variantes)}
+    data-nombre={producto.nombre}
+    data-precio={producto.precio}
+  >
+    <a href="/shoppingcart">carrito</a>
     <img
       src={`http://localhost:3000/producto/img/${id}`}
       alt={producto.nombre}
       width="400"
     />
-    <h1>{producto?.nombre}</h1>
-    <p>Precio: ${producto?.precio}</p>
-    <p>Género: {producto?.genero}</p>
+    <h1>{producto.nombre}</h1>
+    <p>Precio: ${producto.precio}</p>
+    <p>Género: {producto.genero}</p>
 
     <h2>variantes disponibles</h2>
 
@@ -90,6 +97,7 @@ let talles = Array.from(new Set(variantes?.map((v) => v.talle)));
   </main>
 
   <script>
+    import { agregarProducto } from "../stores/store";
     const container = document.getElementById("product-container");
     const formElement = document.getElementById(
       "add-to-cart-form",
@@ -100,9 +108,6 @@ let talles = Array.from(new Set(variantes?.map((v) => v.talle)));
     const talleSelect = document.querySelector(
       'select[name="talle"]',
     ) as HTMLSelectElement;
-    const cantidadInput = document.querySelector(
-      'input[name="cantidad"]',
-    ) as HTMLInputElement;
 
     interface Variante {
       id: string;
@@ -110,13 +115,14 @@ let talles = Array.from(new Set(variantes?.map((v) => v.talle)));
       talle: string;
       cantidad: number;
     }
+    const variantes = JSON.parse(
+      container?.dataset.variantes || "[]",
+    ) as Variante[];
+    const nombreProducto = container?.dataset.nombre || "";
+    const precioProducto = Number(container?.dataset.precio) || 0;
 
     colorSelect.addEventListener("change", () => {
-      console.log("Color seleccionado:", colorSelect.value);
       const colorSeleccionado = colorSelect.value;
-      const variantes = JSON.parse(
-        container?.dataset.variantes || "[]",
-      ) as Variante[];
       const tallesDisponibles = variantes
         .filter((v) => v.color === colorSeleccionado)
         .map((v) => v.talle);
@@ -136,10 +142,22 @@ let talles = Array.from(new Set(variantes?.map((v) => v.talle)));
       const talle = formData.get("talle");
       const cantidad = formData.get("cantidad");
 
-      console.log("Producto agregado:", {
-        color,
-        talle,
-        cantidad,
+      const idVariante = variantes.filter(
+        (v) => v.color === color && v.talle === talle,
+      )[0]?.id;
+
+      if (!idVariante) {
+        alert("Por favor seleccione una variante válida");
+        return;
+      }
+
+      agregarProducto({
+        idVariante,
+        nombre: nombreProducto,
+        precio: precioProducto,
+        cantidad: Number(cantidad),
+        color: String(color),
+        talle: String(talle),
       });
     });
   </script>
@@ -153,6 +171,14 @@ let talles = Array.from(new Set(variantes?.map((v) => v.talle)));
     padding: 2rem;
     border-radius: 12px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  }
+  a{
+    display: inline-block;
+    margin-bottom: 1rem;
+    color: #4caf50;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1.5rem;
   }
   img {
     width: 100%;
