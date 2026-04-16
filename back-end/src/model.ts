@@ -32,6 +32,7 @@ export interface Producto {
 }
 
 export interface ProductoVariante {
+  id: string;
   talle: string;
   color: string;
   cantidad: number;
@@ -55,15 +56,14 @@ class Modelo {
 
   static async getProductVariants(id: string): Promise<ProductoVariante[]> {
     const { rows } = await pool.query<ProductoVariante>(`
-      select
-        v.talle,
-        v.color,
-        v.stock_cantidad as cantidad
-      from
-        productos p
-        join variantes_producto v ON p.id = v.producto_id
-      where p.id = $1
-      `, [id])
+    select
+      id,
+      talle,
+      color,
+      stock_cantidad as cantidad
+    from
+      variantes_producto
+    where producto_id = $1`, [id]);
     return rows
   }
 
