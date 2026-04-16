@@ -56,6 +56,9 @@ CREATE TABLE
     sku VARCHAR(50) UNIQUE
   );
 
+-- Índice para mejorar el rendimiento al buscar variantes por producto
+CREATE INDEX IF NOT EXISTS idx_variantes_producto_id ON variantes_producto (producto_id);
+
 -- 1. Insertar Categorías
 INSERT INTO
   categorias (nombre)
@@ -231,42 +234,42 @@ WHERE
 
 /* Consulta para obtener el catálogo de productos */
 /* SELECT
-  p.nombre AS producto,
-  c.nombre AS genero,
-  p.precio,
-  v.talle,
-  v.color,
-  v.stock_cantidad AS stock,
-  v.sku
+p.nombre AS producto,
+c.nombre AS genero,
+p.precio,
+v.talle,
+v.color,
+v.stock_cantidad AS stock,
+v.sku
 FROM
-  productos p
-  JOIN categorias c ON p.categoria_id = c.id
-  JOIN variantes_producto v ON p.id = v.producto_id
+productos p
+JOIN categorias c ON p.categoria_id = c.id
+JOIN variantes_producto v ON p.id = v.producto_id
 ORDER BY */
-  p.nombre,
-  v.talle;
+p.nombre,
+v.talle;
 
 /* Consulta para obtener productos masculinos */
 /* SELECT
-  p.nombre,
-  p.precio,
-  c.nombre AS genero
+p.nombre,
+p.precio,
+c.nombre AS genero
 FROM
-  productos p
-  JOIN categorias c ON p.categoria_id = c.id
+productos p
+JOIN categorias c ON p.categoria_id = c.id
 WHERE */
-  c.nombre = 'Masculino';
+c.nombre = 'Masculino';
 
 /* Consulta para obtener productos masculinos en talle S */
 /* SELECT
-  p.nombre,
-  p.precio,
-  c.nombre AS genero,
-  v.talle
+p.nombre,
+p.precio,
+c.nombre AS genero,
+v.talle
 FROM
-  productos p
-  JOIN categorias c ON p.categoria_id = c.id
-  JOIN variantes_producto v ON p.id = v.producto_id
+productos p
+JOIN categorias c ON p.categoria_id = c.id
+JOIN variantes_producto v ON p.id = v.producto_id
 WHERE */
-  c.nombre = 'Masculino'
-  and v.talle = 'S';
+c.nombre = 'Masculino'
+and v.talle = 'S';
